@@ -19,9 +19,6 @@ angular.module('grafana.directives').directive('piechartLegend', function(popove
       ctrl.events.on('render', function() {
         data = ctrl.series;
         if (data) {
-          for(var i in data) {
-            data[i].color = ctrl.data[i].color;
-          }
           render();
         }
       });

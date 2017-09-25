@@ -28,9 +28,6 @@ System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jque
             ctrl.events.on('render', function () {
               data = ctrl.series;
               if (data) {
-                for (var i in data) {
-                  data[i].color = ctrl.data[i].color;
-                }
                 render();
               }
             });

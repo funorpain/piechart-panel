@@ -74,7 +74,6 @@ export class PieChartCtrl extends MetricsPanelCtrl {
   }
 
   parseSeries(series) {
-    console.log(this.panel);
     if (this.panel.legend.sort) {
       series = _.sortBy(series, (serie) => {
         if (this.panel.legend.sort === 'series') {
@@ -97,13 +96,16 @@ export class PieChartCtrl extends MetricsPanelCtrl {
       return {
         label: serie.alias,
         data: serie.stats[this.panel.valueName],
-        color: this.panel.aliasColors[serie.alias] || this.$rootScope.colors[i]
+        color: serie.color
       };
     });
   }
 
   onDataReceived(dataList) {
     this.series = dataList.map(this.seriesHandler.bind(this));
+    for (var i = 0, n = this.series.length; i < n; i++) {
+      this.series[i].color = this.panel.aliasColors[this.series[i].alias] || this.$rootScope.colors[i];
+    }
     this.data = this.parseSeries(this.series);
     this.render(this.data);
   }

@@ -151,7 +151,6 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
           value: function parseSeries(series) {
             var _this2 = this;
 
-            console.log(this.panel);
             if (this.panel.legend.sort) {
               series = _.sortBy(series, function (serie) {
                 if (_this2.panel.legend.sort === 'series') {
@@ -174,7 +173,7 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
               return {
                 label: serie.alias,
                 data: serie.stats[_this2.panel.valueName],
-                color: _this2.panel.aliasColors[serie.alias] || _this2.$rootScope.colors[i]
+                color: serie.color
               };
             });
           }
@@ -182,6 +181,9 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
           key: 'onDataReceived',
           value: function onDataReceived(dataList) {
             this.series = dataList.map(this.seriesHandler.bind(this));
+            for (var i = 0, n = this.series.length; i < n; i++) {
+              this.series[i].color = this.panel.aliasColors[this.series[i].alias] || this.$rootScope.colors[i];
+            }
             this.data = this.parseSeries(this.series);
             this.render(this.data);
           }
