@@ -15,7 +15,9 @@ export class PieChartCtrl extends MetricsPanelCtrl {
       pieType: 'pie',
       legend: {
         show: true, // disable/enable legend
-        values: true
+        values: true,
+        sort: 'series',
+        sortDesc: false
       },
       links: [],
       datasource: null,
@@ -72,7 +74,26 @@ export class PieChartCtrl extends MetricsPanelCtrl {
   }
 
   parseSeries(series) {
-    return _.map(this.series, (serie, i) => {
+    console.log(this.panel);
+    if (this.panel.legend.sort) {
+      series = _.sortBy(series, (serie) => {
+        if (this.panel.legend.sort === 'series') {
+          var match = serie.alias.match(/\d+/);
+          if (match) {
+            return parseInt(match[0]);
+          } else {
+            return -1;
+          }
+        } else {
+          return serie.stats[this.panel.legend.sort];
+        }
+      });
+      if (this.panel.legend.sortDesc) {
+        series = series.reverse();
+      }
+    }
+
+    return _.map(series, (serie, i) => {
       return {
         label: serie.alias,
         data: serie.stats[this.panel.valueName],

@@ -1,6 +1,8 @@
 'use strict';
 
 System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jquery.flot.time'], function (_export, _context) {
+  "use strict";
+
   var angular, kbn, $;
   return {
     setters: [function (_angular) {
@@ -12,8 +14,6 @@ System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jque
     }, function (_jqueryFlot) {}, function (_jqueryFlotTime) {}],
     execute: function () {
       //import _ from  'lodash';
-
-
       angular.module('grafana.directives').directive('piechartLegend', function (popoverSrv, $timeout) {
         return {
           link: function link(scope, elem) {
@@ -58,13 +58,13 @@ System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jque
               if (panel.legend.sortDesc === false) {
                 panel.legend.sort = null;
                 panel.legend.sortDesc = null;
-                render();
+                ctrl.render();
                 return;
               }
 
               panel.legend.sortDesc = !panel.legend.sortDesc;
               panel.legend.sort = stat;
-              render();
+              ctrl.render();
             }
 
             function openColorSelector(e) {
@@ -118,9 +118,15 @@ System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jque
               $container.toggleClass('graph-legend-table', tableLayout);
 
               if (tableLayout) {
-                var header = '<tr><th colspan="2" style="text-align:left"></th>';
+                var arrow = function arrow(sortKey) {
+                  if (panel.legend.sort === sortKey) {
+                    return ' <span class="fa fa-caret-' + (panel.legend.sortDesc ? 'down' : 'up') + '"></span>';
+                  }
+                  return '';
+                };
+                var header = '<tr><th class="pointer" colspan="2" style="text-align:left" data-stat="series">series' + arrow('series') + '</th>';
                 if (panel.legend.values) {
-                  header += '<th class="pointer">values</th>';
+                  header += '<th class="pointer" data-stat="' + panel.valueName + '">values' + arrow(panel.valueName) + '</th>';
                 }
                 if (panel.legend.percentage) {
                   header += '<th class="pointer">percentage</th>';
@@ -131,7 +137,16 @@ System.register(['angular', 'app/core/utils/kbn', 'jquery', 'jquery.flot', 'jque
 
               if (panel.legend.sort) {
                 seriesList = _.sortBy(seriesList, function (series) {
-                  return series.stats[panel.legend.sort];
+                  if (panel.legend.sort === 'series') {
+                    var match = series.alias.match(/\d+/);
+                    if (match) {
+                      return parseInt(match[0]);
+                    } else {
+                      return -1;
+                    }
+                  } else {
+                    return series.stats[panel.legend.sort];
+                  }
                 });
                 if (panel.legend.sortDesc) {
                   seriesList = seriesList.reverse();

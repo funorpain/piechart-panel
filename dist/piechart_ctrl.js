@@ -1,6 +1,8 @@
 'use strict';
 
 System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/time_series', './rendering', './legend'], function (_export, _context) {
+  "use strict";
+
   var MetricsPanelCtrl, _, kbn, TimeSeries, rendering, legend, _createClass, PieChartCtrl;
 
   function _classCallCheck(instance, Constructor) {
@@ -72,7 +74,7 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
         function PieChartCtrl($scope, $injector, $rootScope) {
           _classCallCheck(this, PieChartCtrl);
 
-          var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PieChartCtrl).call(this, $scope, $injector));
+          var _this = _possibleConstructorReturn(this, (PieChartCtrl.__proto__ || Object.getPrototypeOf(PieChartCtrl)).call(this, $scope, $injector));
 
           _this.$rootScope = $rootScope;
 
@@ -80,7 +82,9 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
             pieType: 'pie',
             legend: {
               show: true, // disable/enable legend
-              values: true
+              values: true,
+              sort: 'series',
+              sortDesc: false
             },
             links: [],
             datasource: null,
@@ -147,7 +151,26 @@ System.register(['app/plugins/sdk', 'lodash', 'app/core/utils/kbn', 'app/core/ti
           value: function parseSeries(series) {
             var _this2 = this;
 
-            return _.map(this.series, function (serie, i) {
+            console.log(this.panel);
+            if (this.panel.legend.sort) {
+              series = _.sortBy(series, function (serie) {
+                if (_this2.panel.legend.sort === 'series') {
+                  var match = serie.alias.match(/\d+/);
+                  if (match) {
+                    return parseInt(match[0]);
+                  } else {
+                    return -1;
+                  }
+                } else {
+                  return serie.stats[_this2.panel.legend.sort];
+                }
+              });
+              if (this.panel.legend.sortDesc) {
+                series = series.reverse();
+              }
+            }
+
+            return _.map(series, function (serie, i) {
               return {
                 label: serie.alias,
                 data: serie.stats[_this2.panel.valueName],
