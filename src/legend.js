@@ -70,6 +70,20 @@ angular
           ctrl.render();
         }
 
+        function getLegendSeriesHtml(statName) {
+          var name = statName;
+          var html = '<th colspan="2" style="text-align:left" class="pointer" data-stat="' + statName + '">' + name;
+
+          if (panel.legend.sort === statName) {
+            var cssClass = panel.legend.sortDesc
+              ? "fa fa-caret-down"
+              : "fa fa-caret-up";
+            html += ' <span class="' + cssClass + '"></span>';
+          }
+
+          return html + "</th>";
+        }
+
         function getLegendHeaderHtml(statName) {
           var name = statName;
 
@@ -171,7 +185,7 @@ angular
 
           var legendHeader;
           if (tableLayout) {
-            var header = '<tr><th colspan="2" style="text-align:left"></th>';
+            var header = getLegendSeriesHtml("series");
             if (panel.legend.values) {
               header += getLegendHeaderHtml(ctrl.panel.valueName);
             }

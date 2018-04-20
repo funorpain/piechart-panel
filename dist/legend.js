@@ -1,6 +1,8 @@
 "use strict";
 
 System.register(["angular", "app/core/utils/kbn", "jquery", "jquery.flot", "jquery.flot.time", "./lib/perfect-scrollbar.min"], function (_export, _context) {
+  "use strict";
+
   var angular, kbn, $, PerfectScrollbar;
   return {
     setters: [function (_angular) {
@@ -75,6 +77,18 @@ System.register(["angular", "app/core/utils/kbn", "jquery", "jquery.flot", "jque
               panel.legend.sortDesc = !panel.legend.sortDesc;
               panel.legend.sort = stat;
               ctrl.render();
+            }
+
+            function getLegendSeriesHtml(statName) {
+              var name = statName;
+              var html = '<th colspan="2" style="text-align:left" class="pointer" data-stat="' + statName + '">' + name;
+
+              if (panel.legend.sort === statName) {
+                var cssClass = panel.legend.sortDesc ? "fa fa-caret-down" : "fa fa-caret-up";
+                html += ' <span class="' + cssClass + '"></span>';
+              }
+
+              return html + "</th>";
             }
 
             function getLegendHeaderHtml(statName) {
@@ -166,7 +180,7 @@ System.register(["angular", "app/core/utils/kbn", "jquery", "jquery.flot", "jque
 
               var legendHeader;
               if (tableLayout) {
-                var header = '<tr><th colspan="2" style="text-align:left"></th>';
+                var header = getLegendSeriesHtml("series");
                 if (panel.legend.values) {
                   header += getLegendHeaderHtml(ctrl.panel.valueName);
                 }

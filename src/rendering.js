@@ -116,17 +116,34 @@ export default function link(scope, elem, attrs, ctrl) {
 
 
     if (panel.legend.sort) {
-      if (ctrl.panel.valueName !== panel.legend.sort) {
-        panel.legend.sort = ctrl.panel.valueName;
-      }
-      if (panel.legend.sortDesc === true) {
-        data.sort(function (a, b) {
-          return b.legendData - a.legendData;
-        });
+      console.log(panel.legend.sort);
+      if (panel.legend.sort === "series") {
+        for (let i = 0; i < data.length; i++) {
+          let number = data[i].label.match(/[+\-]?\d+/);
+          data[i].sortKey = number !== null ? parseInt(number) : data[i].label;
+        }
+        if (panel.legend.sortDesc === true) {
+          data.sort(function (a, b) {
+            return a.sortKey < b.sortKey ? 1 : a.sortKey > b.sortKey ? -1 : 0;
+          });
+        } else {
+          data.sort(function (a, b) {
+            return b.sortKey < a.sortKey ? 1 : b.sortKey > a.sortKey ? -1 : 0;
+          });
+        }
       } else {
-        data.sort(function (a, b) {
-          return a.legendData - b.legendData;
-        });
+        if (ctrl.panel.valueName !== panel.legend.sort) {
+          panel.legend.sort = ctrl.panel.valueName;
+        }
+        if (panel.legend.sortDesc === true) {
+          data.sort(function (a, b) {
+            return b.legendData - a.legendData;
+          });
+        } else {
+          data.sort(function (a, b) {
+            return a.legendData - b.legendData;
+          });
+        }
       }
     }
 

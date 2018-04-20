@@ -1,6 +1,8 @@
 'use strict';
 
 System.register(['lodash', 'jquery', 'jquery.flot', 'jquery.flot.pie'], function (_export, _context) {
+  "use strict";
+
   var _, $;
 
   function link(scope, elem, attrs, ctrl) {
@@ -117,17 +119,34 @@ System.register(['lodash', 'jquery', 'jquery.flot', 'jquery.flot.pie'], function
       }
 
       if (panel.legend.sort) {
-        if (ctrl.panel.valueName !== panel.legend.sort) {
-          panel.legend.sort = ctrl.panel.valueName;
-        }
-        if (panel.legend.sortDesc === true) {
-          data.sort(function (a, b) {
-            return b.legendData - a.legendData;
-          });
+        console.log(panel.legend.sort);
+        if (panel.legend.sort === "series") {
+          for (var _i = 0; _i < data.length; _i++) {
+            var number = data[_i].label.match(/[+\-]?\d+/);
+            data[_i].sortKey = number !== null ? parseInt(number) : data[_i].label;
+          }
+          if (panel.legend.sortDesc === true) {
+            data.sort(function (a, b) {
+              return a.sortKey < b.sortKey ? 1 : a.sortKey > b.sortKey ? -1 : 0;
+            });
+          } else {
+            data.sort(function (a, b) {
+              return b.sortKey < a.sortKey ? 1 : b.sortKey > a.sortKey ? -1 : 0;
+            });
+          }
         } else {
-          data.sort(function (a, b) {
-            return a.legendData - b.legendData;
-          });
+          if (ctrl.panel.valueName !== panel.legend.sort) {
+            panel.legend.sort = ctrl.panel.valueName;
+          }
+          if (panel.legend.sortDesc === true) {
+            data.sort(function (a, b) {
+              return b.legendData - a.legendData;
+            });
+          } else {
+            data.sort(function (a, b) {
+              return a.legendData - b.legendData;
+            });
+          }
         }
       }
 
