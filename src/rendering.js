@@ -116,7 +116,6 @@ export default function link(scope, elem, attrs, ctrl) {
 
 
     if (panel.legend.sort) {
-      console.log(panel.legend.sort);
       if (panel.legend.sort === "series") {
         for (let i = 0; i < data.length; i++) {
           let number = data[i].label.match(/[+\-]?\d+/);
